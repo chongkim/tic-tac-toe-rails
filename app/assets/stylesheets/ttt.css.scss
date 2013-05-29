@@ -1,0 +1,25 @@
+// Place all the styles related to the ttt controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+.hidden {
+  display: none;
+}
+
+.square {
+  width: 100px;
+  height: 100px;
+  background-color: lightgray;
+  margin: 5px;
+  float: left;
+}
+
+#ttt {
+  margin-left: auto;
+  margin-right: auto;
+  width: 330px;
+  height: 500px;
+}
+
+.left {
+  clear: left;
+}
