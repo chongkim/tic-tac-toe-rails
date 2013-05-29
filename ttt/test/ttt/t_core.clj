@@ -5,8 +5,8 @@
 (fact (:board (init-position)) => '[- - -, - - -, - - -])
 (fact (possible-moves (init-position)) => (range 0 9))
 (fact (:board (move (init-position) 0)) => '[x - -, - - -, - - -])
-(fact (next-turn 'x) => 'o)
-(fact (next-turn 'o) => 'x)
+(fact (other-turn 'x) => 'o)
+(fact (other-turn 'o) => 'x)
 (fact (:dim (init-position)) => 3)
 (fact (:dim (init-position '[- - -, - - -, - - -] 'x)) => 3)
 (fact (:turn (init-position)) => 'x)
@@ -14,7 +14,7 @@
 (fact (:depth (init-position)) => 0)
 (fact (:depth (move (init-position) 0)) => 1)
 (fact (possible-moves (move (init-position) 0)) => (range 1 9))
-(fact (win-lines {:board [0 1 2 3 4 5 6 7 8 9] :dim 3}) => '((0 1 2)  (3 4 5)  (6 7 8)  [0 3 6]  [1 4 7]  [2 5 8]  (0 4 8)  (2 4 6)))
+(fact (win-lines {:board [0 1 2 3 4 5 6 7 8 9] :dim 3}) => '((0 1 2) (3 4 5) (6 7 8) [0 3 6] [1 4 7] [2 5 8] (0 4 8) (2 4 6)))
 
 ;;--------------------------------------------------
 ;; win?
@@ -83,7 +83,7 @@
                                       - x o] 'o)) => 0)
 
 ;;--------------------------------------------------
-;; alphabeta
+;; negamax
 ;;--------------------------------------------------
 (binding [evaluate-leaf (fn [node]
                           (if (= (class node) java.lang.Long)
@@ -120,4 +120,27 @@
 (fact (evaluate (init-position '[x o o
                                  - o x
                                  - - x] 'o)) => -99)
+
+;;--------------------------------------------------
+;; best-move
+;;--------------------------------------------------
+(fact (best-move (init-position '[o - x
+                                  - o x
+                                  - - -] 'x)) => 8)
+
+(fact (best-move (init-position '[x o x
+                                  - o -
+                                  - - -] 'o)) => 7)
+
+(fact (best-move (init-position '[x o -
+                                  - x -
+                                  - - -] 'o)) => 8)
+
+(fact (best-move (init-position '[x o -
+                                  - - -
+                                  - - -] 'x)) => 3)
+
+(fact (time (best-move (init-position '[- - -
+                                        - - -
+                                        - - -] 'x))) => 0)
 

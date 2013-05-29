@@ -1,6 +1,11 @@
 (ns ttt.core
   (require [clojure.string :as string]))
 
+(defmacro debug [form]
+  `(let [val# ~form]
+     (prn val#)
+     val#))
+
 (defn other-turn [turn] 
   (if (= turn 'x) 'o 'x))
 
@@ -22,8 +27,6 @@
        (string/join "\n-----------\n" (map #(string/join " | " % ) (partition (:dim position) (:board position))))
        "\nturn: "
        (:turn position)
-       "\nvalue: "
-       (evaluate position)
        "\n"))
 
 (defn possible-moves [position]
@@ -65,17 +68,30 @@
 (defn ^:dynamic find-children [position]
   (map #(move position %) (possible-moves position)))
 
-(defn negamax [node alpha beta color]
-  (let [node-value (evaluate-leaf node)]
-    (if node-value
-      (* color node-value)
-      (->> node
-           (find-children)
-           (map #(- (negamax % (- beta) (- alpha) (- color))))
-           (take-while #(< % beta))
-           (cons alpha)
-           (apply max)))))
+(def negamax (memoize (fn [node alpha beta color]
+                        (let [node-value (evaluate-leaf node)]
+                          (if node-value
+                            (* color node-value)
+                            (->> node
+                                 (find-children)
+                                 (map #(- (negamax % (- beta) (- alpha) (- color))))
+                                 (take-while #(< % beta))
+                                 (cons alpha)
+                                 (apply max)))))))
+
+(defn get-color [position ] ((:turn position) {'x 1 'o -1}))
 
 (defn evaluate [position]
-  (let [color ((:turn position) {'x 1 'o -1})]
+  (let [color (get-color position)]
     (* color (negamax position (- MAX-VALUE) MAX-VALUE color))))
+
+(def memoized-evaluate (memoize evaluate))
+
+(defn best-move [position]
+  (let [color (get-color position)]
+    (->> position
+         (possible-moves)
+         (map #(vector (memoized-evaluate (move position %)) %))
+         (sort #(* (- color) (compare (first %1) (first %2))))
+         (first)
+         (second))))
