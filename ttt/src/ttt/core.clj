@@ -24,13 +24,14 @@
 
 (defn position-str [position]
   (str "\n"
-       (string/join "\n-----------\n" (map #(string/join " | " % ) (partition (:dim position) (:board position))))
+       (string/join "\n-----------\n"
+                    (map #(string/join " | " % ) (partition (:dim position) (:board position))))
        "\nturn: "
        (:turn position)
        "\n"))
 
 (defn possible-moves [position]
-  (keep-indexed #(if (= '- %2) %1) (:board position)))
+  (keep-indexed #(when-not (or (= 'x %2) (= 'o %2)) %1) (:board position)))
 
 (defn move [position n]
   (merge position {:board (assoc (:board position) n (:turn position))
@@ -68,30 +69,36 @@
 (defn ^:dynamic find-children [position]
   (map #(move position %) (possible-moves position)))
 
-(def negamax (memoize (fn [node alpha beta color]
-                        (let [node-value (evaluate-leaf node)]
-                          (if node-value
-                            (* color node-value)
-                            (->> node
-                                 (find-children)
-                                 (map #(- (negamax % (- beta) (- alpha) (- color))))
-                                 (take-while #(< % beta))
-                                 (cons alpha)
-                                 (apply max)))))))
+(def negamax
+  (memoize
+    (fn [node alpha beta color]
+      (let [node-value (evaluate-leaf node)]
+        (if node-value
+          (* color node-value)
+          (->> node
+               (find-children)
+               (map #(- (negamax % (- beta) (- alpha) (- color))))
+               (take-while #(< % beta))
+               (cons alpha)
+               (apply max)))))))
 
-(defn get-color [position ] ((:turn position) {'x 1 'o -1}))
+(defn get-color [position ] ({'x 1 'o -1} (:turn position)))
 
 (defn evaluate [position]
   (let [color (get-color position)]
     (* color (negamax position (- MAX-VALUE) MAX-VALUE color))))
 
-(def memoized-evaluate (memoize evaluate))
+(defn best-moves [position]
+  (let [color (get-color position)
+        choices (->> position
+                     (possible-moves)
+                     (map #(vector (evaluate (move position %)) %))
+                     (sort #(* (- color) (compare (first %1) (first %2)))))
+        best-score (ffirst choices)]
+    (keep #(if (= best-score (first %)) (second %)) choices)))
 
 (defn best-move [position]
-  (let [color (get-color position)]
-    (->> position
-         (possible-moves)
-         (map #(vector (memoized-evaluate (move position %)) %))
-         (sort #(* (- color) (compare (first %1) (first %2))))
-         (first)
-         (second))))
+  (first (best-moves position)))
+
+(defn random-best-move [position]
+  (rand-nth (best-moves position)))

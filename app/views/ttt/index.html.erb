@@ -45,6 +45,15 @@
     first_player = player;
     $('#ttt').html($('#board_display').html());
     $('#message').html("Welcome to Tic Tac Toe");
+    if (player == "computer") {
+      computer_move();
+    }
+  }
+  function computer_move() {
+    $.get("/ttt/move", data, function(n) {
+        console.log("got " + n);
+      make_move(n);
+    });
   }
   function make_move(n) {
     $("#t-" + n).html(data.turn);
@@ -53,8 +62,6 @@
   }
   function send_move(n) {
     make_move(n);
-    $.get("/ttt/move", data, function(n) {
-      make_move(n);
-    });
+    computer_move();
   }
 </script>

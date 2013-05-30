@@ -1,7 +1,7 @@
 require File.expand_path('../boot', __FILE__)
 
 require 'java'
-Dir["#{File.dirname(__FILE__)}/../ttt/*.jar"].each do |jar|
+Dir["#{File.dirname(__FILE__)}/../ttt/**/*.jar"].each do |jar|
   require jar
 end
 
