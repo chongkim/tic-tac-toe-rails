@@ -1,17 +1,21 @@
+<div id="ocean">
+  <h1>Tic Tac Toe</h1>
+  <div id="ttt"></div>
 
-<div id="ttt">
-</div>
+  <img src="assets/boat.png" class="boat">
 
-<div id="set_first_player" class="hidden">
-  Who do you want to play first?<br />
-  <form action="javascript:return false" method="get" accept-charset="utf-8">
-    <input type="button" name="human_first" id="human_first" value="Human First" onclick="javascript:set_first_player('human')"/><br />
-    <input type="button" name="computer_first" id="computer_first" value="Computer First" onclick="javascript:set_first_player('computer')"/>
-  </form>
-</div>
+  <div id="set_first_player" class="hidden">
+    Who do you want to play first?<br />
+    <form action="javascript:return false" method="get" accept-charset="utf-8">
+      <input type="button" name="human_first" id="human_first" value="Human First" onclick="javascript:set_first_player('Human')"/><br />
+      <input type="button" name="computer_first" id="computer_first" value="Computer First" onclick="javascript:set_first_player('Computer')"/>
+    </form>
+  </div>
 
-<div id="board_display" class="hidden">
-  <% (0..8).each do |i|
+  <div id="board_display" class="hidden">
+    <div id="message"></div>
+    <div class="squares">
+      <% 9.times do |i|
         classes = []
         classes << "square"
         classes << "left"     if i%3 == 0 
@@ -22,46 +26,7 @@
         classes << "bottom"   if i/3 == 2 %>
 
       <div id="t-<%= i %>" class="<%= classes.join(" ") %>" onclick="javascript:send_move(<%= i %>)"></div>
-  <% end %>
-  <div id="message"></div>
+    <% end %>
+  </div>
+  <div id="play_again_dialog" class="hidden">Do you want to play again?</div>
 </div>
-
-<script type="text/javascript" charset="utf-8">
-  var first_player = null;
-  var data = {
-    board: ["", "", "",
-           "", "", "",
-           "", "", ""],
-    turn: "x",
-    dim: 3,
-    x: "x",
-    o: "o"
-  };
-
-  $(function() {
-    $('#ttt').html($('#set_first_player').html());
-  });
-  function set_first_player(player) {
-    first_player = player;
-    $('#ttt').html($('#board_display').html());
-    $('#message').html("Welcome to Tic Tac Toe");
-    if (player == "computer") {
-      computer_move();
-    }
-  }
-  function computer_move() {
-    $.get("/ttt/move", data, function(n) {
-        console.log("got " + n);
-      make_move(n);
-    });
-  }
-  function make_move(n) {
-    $("#t-" + n).html(data.turn);
-    data.board[n] = data.turn
-    data.turn = data.turn == data.x ? data.o : data.x;
-  }
-  function send_move(n) {
-    make_move(n);
-    computer_move();
-  }
-</script>

@@ -80,7 +80,10 @@
                (map #(- (negamax % (- beta) (- alpha) (- color))))
                (take-while #(< % beta))
                (cons alpha)
-               (apply max)))))))
+               (apply max))
+          
+
+          )))))
 
 (defn get-color [position ] ({'x 1 'o -1} (:turn position)))
 

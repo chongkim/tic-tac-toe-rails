@@ -148,3 +148,4 @@
 ;; random-best-move
 ;;--------------------------------------------------
 (fact (random-best-move (init-position)) => #(and (<= 0 %) (<= % 8)))
+

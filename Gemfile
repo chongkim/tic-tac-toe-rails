@@ -22,14 +22,16 @@ end
 
 gem 'jquery-rails'
 gem 'jrclj'
-
-group :development, :test do
-  gem 'database_cleaner'
-  gem 'rspec-rails'
-  gem 'capybara'
-  gem 'poltergeist'
-end
+gem 'therubyrhino'
 
 group :test do
-  gem 'cucumber-rails'
+  gem 'rspec-rails'
+  gem 'poltergeist'
+  gem 'spork'
+  gem 'guard'
+  gem 'guard-spork'
+  gem 'guard-rspec'
+  gem 'guard-coffeescript'
+  gem 'capybara'
+  gem 'database_cleaner'
 end
