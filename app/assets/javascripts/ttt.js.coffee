@@ -1,14 +1,55 @@
-$ -> $('#ttt').html($('#set_first_player').html())
-$ -> $('#play_again_dialog').dialog(
-  autoOpen: false
-  resizable: false
-  height: 240
-  modal: true
-  buttons:
-    'Yes': ->
-      play_again()
-      $(this).dialog('close')
-    'No': -> $(this).dialog('close'))
+boat_duration = 80000
+loading = false
+animate_boat_right = ->
+  $('#boat').attr('src', '/assets/boat-flip.png')
+  $('#boat').animate({left: '100%'}, boat_duration, animate_boat_left)
+
+animate_boat_left = ->
+  $('#boat').attr('src', '/assets/boat.png')
+  $('#boat').animate({left: '-300px'}, boat_duration, animate_boat_right)
+
+animate_boat_clockwise = ->
+  $('#boat').rotate({
+    animateTo: 10,
+    duration: boat_duration/5,
+    easing: (x, t, b, c, d) -> return b+(t/d)*c,
+    callback: animate_boat_counterclockwise})
+animate_boat_counterclockwise = ->
+  $('#boat').rotate({
+    animateTo: -10,
+    duration: boat_duration/5,
+    easing: (x, t, b, c, d) -> return b+(t/d)*c,
+    callback: ->
+      animate_boat_clockwise if loading
+  })
+animate_loading = ->
+  $("#loading img").rotate({
+    angle: 0,
+    animateTo: 360
+    duration: 4000
+    easing: (x, t, b, c, d) -> return b+(t/d)*c
+    callback: -> animate_loading
+  })
+
+$ ->
+  $('#ttt').html($('#set_first_player').html())
+  animate_boat_left()
+  animate_boat_clockwise()
+  $.ajaxSetup({
+    beforeSend: ->
+      loading = true
+      setTimeout(
+        ->
+          if (loading)
+            $('#loading').show()
+            animate_loading()
+      , 500)
+    complete: ->
+      loading = false
+      $('#loading').hide()
+  })
+  $('#options').buttonset()
+  
 
 root = exports ? this
 first_player = null
@@ -63,23 +104,44 @@ root.play_again = ->
   $('#ttt').html($('#set_first_player').html())
   root.game_end = false
 
-root.ask_play_again = ->
-  $('#play_again_dialog').dialog('open')
+root.ask_play_again = (title, body) ->
+  $('#play_again_dialog').html(body)
+  $('#play_again_dialog').dialog(
+    autoOpen: true
+    resizable: false
+    title: title
+    modal: true
+    buttons:
+      'Yes': ->
+        play_again()
+        $(this).dialog('close')
+      'No': ->
+        $('#message').html($('#message').html() + "<button onclick='javascript:play_again()'>Play again</button>")
+        $(this).dialog('close'))
 
 root.end_game = () ->
   root.game_end = true
   setTimeout(ask_play_again, 250)
 
+root.set_winner = (winner) ->
+  if winner
+    $('#message').html("#{winner} Wins")
+    $('#play_again_dialog').html("#{winner} Wins. Do you want to play again?")
+  else
+    $("#message").html("Game is a draw")
+    $('#play_again_dialog').html("Draw. Do you want to play again?")
+
 root.check_for_win = ->
   if (is_win("x"))
-    $("#message").html("#{first_player} Wins")
+    set_winner(first_player)
     end_game()
   else if (is_win("o"))
-    $("#message").html("#{second_player} Wins")
+    set_winner(second_player)
     end_game()
   else if count_blanks() == 0
-    $("#message").html("Game is a draw")
+    set_winner(null)
     end_game()
+  
 
 root.set_first_player = (player) ->
   first_player = player
@@ -90,6 +152,7 @@ root.set_first_player = (player) ->
 
 root.computer_move = () ->
   return if root.game_end
+  root.position.speed = $('input[name="speed"]:checked').attr('id')
   $.get("/ttt/move", root.position, (n) -> make_move(n))
 
 root.make_mark = (position) ->
@@ -105,10 +168,12 @@ root.make_move = (n) ->
     root.position.board[n] = root.position.turn
     root.position.turn = if root.position.turn == root.position.x then root.position.o else root.position.x
     check_for_win()
+    return true
   else
     $('#message').html("Please click on an empty square")
+    return false
 
 root.send_move = (n) ->
   return if root.game_end
-  make_move(n)
-  computer_move()
+  if make_move(n)
+    computer_move()

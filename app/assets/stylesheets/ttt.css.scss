@@ -40,27 +40,34 @@ input[type=button] {
   color-stop(0.49, rgb(127,187,240)) 
   ); 
 }
+
 h1 {
   font-family: 'Pacifico', cursive;
   color: #a1dbff;
   text-shadow: 2px 2px #333;
-  font-size: 4em;
+  font-size: 3em;
   margin: 0 auto;
-  padding: 1em 0 0 0;
+  padding: 0;
   text-align: center;
+}
+h2 {
+  font-family: 'Della Respira', serif;
+  font-size: 1em;
+  height: 2ex;
 }
 
 .hidden {
   display: none;
 }
 
-.boat {
+#boat {
   position: absolute;
   top: 50%;
-  left: 10em;
+  left: 100%;
 }
 
 .square {
+  position: relative;
   width: 150px;
   height: 150px;
   background-color: rgb(255, 255, 255);
@@ -69,6 +76,7 @@ h1 {
   float: left;
   font-size: 100px;
   text-align: center;
+  z-index: 1;
 }
 
 #ocean {
@@ -86,11 +94,27 @@ h1 {
 }
 
 #ttt {
+  position: relative;
   width: 480px;
   height: 480px;
   margin: 0 auto;
+  z-index: 1;
 }
 
 .left {
   clear: left;
+}
+
+#loading {
+  position: relative;
+  display: none;
+}
+#options {
+  position: absolute;
+  left: 0;
+  top: 100px;
+}
+
+.item span {
+  width: 260px;
 }

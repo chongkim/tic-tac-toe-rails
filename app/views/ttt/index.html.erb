@@ -2,10 +2,10 @@
   <h1>Tic Tac Toe</h1>
   <div id="ttt"></div>
 
-  <img src="assets/boat.png" class="boat">
+  <img src="assets/boat.png" id="boat">
 
   <div id="set_first_player" class="hidden">
-    Who do you want to play first?<br />
+    <h2>Who do you want to play first?</h2>
     <form action="javascript:return false" method="get" accept-charset="utf-8">
       <input type="button" name="human_first" id="human_first" value="Human First" onclick="javascript:set_first_player('Human')"/><br />
       <input type="button" name="computer_first" id="computer_first" value="Computer First" onclick="javascript:set_first_player('Computer')"/>
@@ -13,7 +13,7 @@
   </div>
 
   <div id="board_display" class="hidden">
-    <div id="message"></div>
+    <h2 id="message"></h2>
     <div class="squares">
       <% 9.times do |i|
         classes = []
@@ -28,5 +28,14 @@
       <div id="t-<%= i %>" class="<%= classes.join(" ") %>" onclick="javascript:send_move(<%= i %>)"></div>
     <% end %>
   </div>
-  <div id="play_again_dialog" class="hidden">Do you want to play again?</div>
+  <div id="play_again_dialog" title="Play Again?" class="hidden">Human wins. Do you want to play again?</div>
 </div>
+<div id="loading">
+  <img src="assets/lifepreserver.png">
+</div>
+<form name="speed_form">
+<div id="options">
+  <div class="item"><input type="radio" name="speed" id="fast_option" checked="checked"/><label for="fast_option">Computer plays fast</label></div>
+  <div class="item"><input type="radio" name="speed" id="slow_option" /><label for="slow_option">Computer plays slow</label></div>
+</div>
+</form>
