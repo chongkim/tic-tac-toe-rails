@@ -165,6 +165,9 @@ root.make_move = (n) ->
   clear_message()
   if (root.position.board[n] == "-")
     $("#t-" + n).html(make_mark(root.position))
+    # wait for image to load
+    while($("#t-" + n).html() == "")
+      sleep(100)
     root.position.board[n] = root.position.turn
     root.position.turn = if root.position.turn == root.position.x then root.position.o else root.position.x
     check_for_win()

@@ -9,8 +9,7 @@ class TttController < ApplicationController
     position = clj.init_position(board, turn)
     speed = params[:speed]
     if (speed == "slow_option") then
-      timeout = params[:board].count("-") - 4
-      sleep(timeout) if 0 < timeout
+      sleep(2)
     end
     render :json => clj.random_best_move(position)
   end
