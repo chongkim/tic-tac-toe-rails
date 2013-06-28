@@ -11,3 +11,24 @@
  *= require_self
  *= require_tree .
  */
+#message {
+  text-align: center;
+}
+h1 a:visited, h1 a:link, h1:hover {
+  text-decoration: none;
+  color: #a1dbff;
+  background-color: rgba(0,0,0,0);
+}
+  
+#content {
+  padding: 20px;
+  margin: 0 auto;
+  width: 600px;
+  background-color: white;
+  border: 1px solid black;
+}
+
+#banner {
+  padding: 10px;
+  text-align: right;
+}

@@ -23,13 +23,12 @@ end
 gem 'jquery-rails'
 gem 'jrclj'
 gem 'therubyrhino'
+gem 'heroku'
 
 group :test do
   gem 'rspec-rails'
   gem 'poltergeist'
-  gem 'spork'
   gem 'guard'
-  gem 'guard-spork'
   gem 'guard-rspec'
   gem 'guard-coffeescript'
   gem 'capybara'

@@ -1,35 +1,23 @@
-<div id="ocean">
-  <h1>Tic Tac Toe</h1>
   <div id="ttt"></div>
 
-  <img src="assets/boat.png" id="boat">
 
   <div id="set_first_player" class="hidden">
-    <h2>Who do you want to play first?</h2>
+    <h2>Play against:</h2>
     <form action="javascript:return false" method="get" accept-charset="utf-8">
-      <input type="button" name="human_first" id="human_first" value="Human First" onclick="javascript:set_first_player('Human')"/><br />
-      <input type="button" name="computer_first" id="computer_first" value="Computer First" onclick="javascript:set_first_player('Computer')"/>
+      <input type="button" name="human_first" id="human_first" value="You vs Computer"
+      onclick="javascript:set_players('Human', 'Computer', 'x')"/><br />
+      <input type="button" name="computer_first" id="computer_first" value="Computer vs You"
+      onclick="javascript:set_players('Computer', 'Human', 'o')"/><br />
+      <input type="button" name="against_another_player" id="Opponent First" value="You vs Opponent" onclick="window.location='<%= url_for :controller => :games, :action => :new %>'"/>
     </form>
   </div>
 
-  <div id="board_display" class="hidden">
-    <h2 id="message"></h2>
-    <div class="squares">
-      <% 9.times do |i|
-        classes = []
-        classes << "square"
-        classes << "left"     if i%3 == 0 
-        classes << "h-middle" if i%3 == 1 
-        classes << "right"    if i%3 == 2 
-        classes << "top"      if i/3 == 0
-        classes << "v-middle" if i/3 == 1
-        classes << "bottom"   if i/3 == 2 %>
-
-      <div id="t-<%= i %>" class="<%= classes.join(" ") %>" onclick="javascript:send_move(<%= i %>)"></div>
-    <% end %>
+  <div id="board_display">
+  <%= render :partial => 'shared/board_display' %>
   </div>
-  <div id="play_again_dialog" title="Play Again?" class="hidden">Human wins. Do you want to play again?</div>
-</div>
+  <script type="text/javascript" charset="utf-8">
+    $('#board_display').addClass('hidden')
+  </script>
 <div id="loading">
   <img src="assets/lifepreserver.png">
 </div>
@@ -39,3 +27,4 @@
   <div class="item"><input type="radio" name="speed" id="slow_option" /><label for="slow_option">Computer plays slow</label></div>
 </div>
 </form>
+

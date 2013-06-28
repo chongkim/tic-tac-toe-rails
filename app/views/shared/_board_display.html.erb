@@ -1,0 +1,15 @@
+<div class="squares">
+  <% 9.times do |i|
+    classes = []
+    classes << "square"
+    classes << "left"     if i%3 == 0 
+    classes << "h-middle" if i%3 == 1 
+    classes << "right"    if i%3 == 2 
+    classes << "top"      if i/3 == 0
+    classes << "v-middle" if i/3 == 1
+    classes << "bottom"   if i/3 == 2 %>
+
+    <div id="t-<%= i %>" class="<%= classes.join(" ") %>" onclick="javascript:send_move(<%= i %>, current_player_symbol)"></div>
+  <% end %>
+</div>
+<div id="play_again_dialog" title="Play Again?" class="hidden">Human wins. Do you want to play again?</div>

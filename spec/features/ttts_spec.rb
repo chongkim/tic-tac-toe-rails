@@ -8,7 +8,7 @@ describe "a tic-tac-toe board and plays a game" do
 
   context "home page", :js => true do
     it "should prompt you who plays first" do
-      find("#ttt").text.should == "Who d"+"o you want to play first?"
+      find("#ttt").text.should == "Who do you want to play first?"
     end
   end
 
@@ -40,8 +40,3 @@ describe "a tic-tac-toe board and plays a game" do
     end
   end
 end
-      # # @javascript
-      # # Scenario:
-      # #   When I click on button "Human First"
-      # #   And I reload the page
-      # #   Then I should have selector "#t-0"

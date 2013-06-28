@@ -1,5 +1,8 @@
-boat_duration = 80000
+boat_duration = 40000
+boat_rocking_duration = 3000
 loading = false
+animate = false
+
 animate_boat_right = ->
   $('#boat').attr('src', '/assets/boat-flip.png')
   $('#boat').animate({left: '100%'}, boat_duration, animate_boat_left)
@@ -10,31 +13,30 @@ animate_boat_left = ->
 
 animate_boat_clockwise = ->
   $('#boat').rotate({
-    animateTo: 10,
-    duration: boat_duration/5,
-    easing: (x, t, b, c, d) -> return b+(t/d)*c,
+    animateTo: 10
+    duration: boat_rocking_duration
+    # easing: (x, t, b, c, d) -> return b+(t/d)*c
     callback: animate_boat_counterclockwise})
 animate_boat_counterclockwise = ->
   $('#boat').rotate({
-    animateTo: -10,
-    duration: boat_duration/5,
-    easing: (x, t, b, c, d) -> return b+(t/d)*c,
-    callback: ->
-      animate_boat_clockwise if loading
-  })
+    animateTo: -10
+    duration: boat_rocking_duration
+    # easing: (x, t, b, c, d) -> return b+(t/d)*c
+    callback: animate_boat_clockwise })
 animate_loading = ->
   $("#loading img").rotate({
     angle: 0,
-    animateTo: 360
-    duration: 4000
+    animateTo: 360,
+    duration: 4000,
     easing: (x, t, b, c, d) -> return b+(t/d)*c
     callback: -> animate_loading
   })
 
 $ ->
   $('#ttt').html($('#set_first_player').html())
-  animate_boat_left()
-  animate_boat_clockwise()
+  if animate
+    animate_boat_left()
+    animate_boat_clockwise()
   $.ajaxSetup({
     beforeSend: ->
       loading = true
@@ -56,14 +58,13 @@ first_player = null
 second_player = null
 dim = 3
 root.game_end = false
+root.current_player_symbol = null
 root.init_position = (board="- - -"+
                             "- - -"+
                             "- - -", turn="x") ->
   position =
     board: (x for x in board when x in "xo-")
     turn: turn
-    x: "x"
-    o: "o"
   position
 
 root.position = init_position()
@@ -121,7 +122,7 @@ root.ask_play_again = (title, body) ->
 
 root.end_game = () ->
   root.game_end = true
-  setTimeout(ask_play_again, 250)
+  setTimeout(ask_play_again, 500)
 
 root.set_winner = (winner) ->
   if winner
@@ -142,41 +143,76 @@ root.check_for_win = ->
     set_winner(null)
     end_game()
   
-
-root.set_first_player = (player) ->
-  first_player = player
-  second_player = if player == "Computer" then "Human" else "Computer"
+root.set_players = (first_player_in, second_player_in, player_symbol) ->
+  first_player  = first_player_in
+  second_player = second_player_in
   $('#ttt').html($('#board_display').html())
   $('#message').html("Welcome to Tic Tac Toe")
-  computer_move() if (player == "Computer")
+  root.current_player_symbol = player_symbol
+  computer_move() if first_player == "Computer"
+  $('#first_player').addClass('turn')
+  check_for_move() if root.current_player_symbol != "x"
 
-root.computer_move = () ->
-  return if root.game_end
-  root.position.speed = $('input[name="speed"]:checked').attr('id')
-  $.get("/ttt/move", root.position, (n) -> make_move(n))
+root.make_mark = (symbol) ->
+  return "" if symbol == "-"
+  "<img src=\"/assets/#{if symbol == "x" then "oars" else "lifepreserver"}.png\">"
 
-root.make_mark = (position) ->
-  "<img src=\"/assets/#{if position.turn == position.x then "oars.png" else "lifepreserver.png"}\">"
+root.put_mark = (idx, symbol) -> $('#t-'+ idx).html(make_mark(symbol))
+root.get_mark = (idx) -> $('#t-'+idx).html()
 
 clear_message = () -> $('#message').html("")
 
-root.make_move = (n) ->
-  return if root.game_end
+root.other_turn = (turn) -> if turn == "x" then "o" else "x"
+
+root.put_turn = ->
+  if position.turn == "x"
+    $("#first_player").addClass("turn")
+    $("#second_player").removeClass("turn")
+  else
+    $("#first_player").removeClass("turn")
+    $("#second_player").addClass("turn")
+
+
+root.make_move = (idx, symbol) ->
+  return false if root.game_end
+  return false if symbol != root.position.turn
   clear_message()
-  if (root.position.board[n] == "-")
-    $("#t-" + n).html(make_mark(root.position))
-    # wait for image to load
-    while($("#t-" + n).html() == "")
-      sleep(100)
-    root.position.board[n] = root.position.turn
-    root.position.turn = if root.position.turn == root.position.x then root.position.o else root.position.x
+  if (root.position.board[idx] == "-")
+    put_mark(idx, root.position.turn)
+    root.position.board[idx] = root.position.turn
+    root.position.turn = other_turn(root.position.turn)
+    put_turn()
     check_for_win()
     return true
   else
     $('#message').html("Please click on an empty square")
     return false
 
-root.send_move = (n) ->
+root.computer_move = () ->
   return if root.game_end
-  if make_move(n)
-    computer_move()
+  root.position.speed = $('input[name="speed"]:checked').attr('id')
+  $.get("/ttt/move", root.position, (n) -> make_move(n, other_turn(current_player_symbol)))
+
+root.opponent_move = ->
+  return if root.game_end
+  $.get("/games/"+root.game_id+"/opponent_move", root.position, check_for_move)
+
+root.set_position = (new_position) ->
+  return if new_position == null
+  root.position = new_position
+  put_mark(idx, root.position.board[idx]) for idx in [0..8]
+
+root.get_position = -> $.get("/games/"+root.game_id+"/get_position", set_position)
+
+root.check_for_move = ->
+  get_position()
+  if position.turn != current_player_symbol
+    setTimeout(check_for_move, 3000)
+
+root.send_move = (n, symbol) ->
+  return if root.game_end
+  if make_move(n, symbol)
+    if (second_player == "Computer")
+      computer_move()
+    else
+      opponent_move()
