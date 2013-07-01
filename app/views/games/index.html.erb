@@ -12,17 +12,23 @@
   </tr>
 
 <% @games.each do |game| %>
+  <% first_user = game.first_user || User.new %>
+  <% second_user = game.second_user || User.new %>
   <tr>
     <td><%= link_to 'Show', game %></td>
     <td><%= game.id %></td>
-    <td><%= game.first_user ? game.first_user.email : '' %><br />
-        <%= game.second_user ? game.second_user.email : '' %></td>
+    <td><%= first_user.email %><br />
+        <%= second_user.email %></td>
     <td>
       <pre><%= game.board.nil? ? "" : game.board.chars.each_slice(3).map { |row| " " + row.join(" | ") }.join("\n-----------\n") %></pre>
     </td>
 
     <td align="center"><%= game.turn %></td>
-    <td><%= link_to 'Destroy', game, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    <td>
+      <% if current_user && (first_user.email == current_user.email || second_user.email == current_user.email) %>
+        <%= link_to 'Destroy', game, method: :delete, data: { confirm: 'Are you sure?' } %>
+      <% end %>
+    </td>
   </tr>
 <% end %>
 </table>
