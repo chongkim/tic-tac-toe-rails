@@ -21,6 +21,10 @@ class GamesController < ApplicationController
       query_params.merge!(:login_token => params[:login_token]) if !params[:login_token].nil?
       redirect_to params[:login_token] ? edit_user_path(query_params) : sign_in_path(query_params)
       return
+    elsif params[:login_token]
+      @game = Game.find(params[:id])
+      redirect_to @game
+      return
     end
 
     @game = Game.find(params[:id])

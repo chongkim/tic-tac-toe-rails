@@ -83,7 +83,7 @@ root.win_lines = ->
 
 root.is_win = (turn) ->
   for line in win_lines()
-    return true if is_win_line line, turn
+    return true if is_win_line(line, turn)
   return false
 
 root.is_win_line = (line, turn) ->
@@ -103,8 +103,8 @@ root.clear_board = ->
 root.play_again = ->
   root.position = init_position()
   clear_board()
-  $('#ttt').html($('#set_first_player').html())
   root.game_end = false
+  computer_move() if first_player.name == "Computer"
 
 root.ask_play_again = (title, body) ->
   if playing_computer()
@@ -133,18 +133,18 @@ root.end_game = () ->
   root.game_end = true
   setTimeout(ask_play_again, 500)
 
-root.playing_computer = -> return first_player.name == "Computer" || second_player.name == "Computer"
+root.playing_computer = -> return (first_player.name == "Computer" || second_player.name == "Computer")
 
 root.set_winner = (winner) ->
   if winner
     $('#message').html("#{winner} Wins")
     html = "#{winner} Wins."
-    html += "Do you want to play again?" if playing_computer()
+    html += "  Do you want to play again?" if playing_computer()
     $('#play_again_dialog').html(html)
   else
     $("#message").html("Game is a draw")
     html = "Draw."
-    html += "Do you want to play again?" if playing_computer()
+    html += "  Do you want to play again?" if playing_computer()
     $('#play_again_dialog').html(html)
 
 root.check_for_win = ->
@@ -152,7 +152,7 @@ root.check_for_win = ->
     set_winner(first_player.name)
     end_game()
   else if (is_win("o"))
-    set_winner(second_player_name)
+    set_winner(second_player.name)
     end_game()
   else if count_blanks() == 0
     set_winner(null)
@@ -195,13 +195,14 @@ root.put_turn = ->
 root.make_move = (idx, symbol) ->
   return false if root.game_end
   return false if symbol != root.position.turn
-  return false if current_player.email != first_player.email || current_player.email != second_player.email
+  return false if current_player.email != first_player.email && current_player.email != second_player.email
   clear_message()
   if (root.position.board[idx] == "-")
     put_mark(idx, root.position.turn)
     root.position.board[idx] = root.position.turn
     root.position.turn = other_turn(root.position.turn)
     put_turn()
+    check_for_win()
     return true
   else
     $('#message').html("Please click on an empty square")
@@ -234,8 +235,7 @@ root.check_for_move = ->
 root.send_move = (n, symbol) ->
   return if root.game_end
   if make_move(n, symbol)
-    if (second_player == "Computer")
+    if playing_computer()
       computer_move()
     else
       opponent_move()
-    check_for_win()

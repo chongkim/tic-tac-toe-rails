@@ -17,7 +17,7 @@
   game_id = <%= @game.id %>;
   $(function() {
       set_players(
-        {name: '<%= @first_player.name %>', email: ' <%= @first_player.email %>'},
+        {name: '<%= @first_player.name %>', email: '<%= @first_player.email %>'},
         {name: '<%= @second_player.name %>', email: '<%= @second_player.email %>'},
         {name: '<%= @current_player.name %>', email: '<%= @current_player.email %>'},
         '<%= @current_player_symbol %>');
