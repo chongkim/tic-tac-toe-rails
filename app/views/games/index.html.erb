@@ -1,29 +1,27 @@
-<h1>Listing games</h1>
+<div id="content">
+<h2>Listing games</h2>
 
-<table>
+<table class="listing">
   <tr>
+    <th></th>
     <th>Id</th>
-    <th>First Player</th>
-    <th>Second Player</th>
+    <th>Players</th>
     <th>Board</th>
     <th>Turn</th>
-    <th>Completed</th>
-    <th>Accepted</th>
-    <th></th>
-    <th></th>
     <th></th>
   </tr>
 
 <% @games.each do |game| %>
   <tr>
-    <td><%= game.id %></td>
-    <td><%= game.first_user ? game.first_user.email : '' %></td>
-    <td><%= game.second_user ? game.second_user.email : '' %></td>
-    <td><%= game.board %></td>
-    <td><%= game.turn %></td>
-    <td><%= game.completed %></td>
-    <td><%= game.accepted %></td>
     <td><%= link_to 'Show', game %></td>
+    <td><%= game.id %></td>
+    <td><%= game.first_user ? game.first_user.email : '' %><br />
+        <%= game.second_user ? game.second_user.email : '' %></td>
+    <td>
+      <pre><%= game.board.nil? ? "" : game.board.chars.each_slice(3).map { |row| " " + row.join(" | ") }.join("\n-----------\n") %></pre>
+    </td>
+
+    <td align="center"><%= game.turn %></td>
     <td><%= link_to 'Destroy', game, method: :delete, data: { confirm: 'Are you sure?' } %></td>
   </tr>
 <% end %>
@@ -32,3 +30,4 @@
 <br />
 
 <%= link_to 'New Game', new_game_path %>
+</div>

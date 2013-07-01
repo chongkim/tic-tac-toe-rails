@@ -106,31 +106,45 @@ root.play_again = ->
   root.game_end = false
 
 root.ask_play_again = (title, body) ->
-  $('#play_again_dialog').html(body)
-  $('#play_again_dialog').dialog(
-    autoOpen: true
-    resizable: false
-    title: title
-    modal: true
-    buttons:
-      'Yes': ->
-        play_again()
-        $(this).dialog('close')
-      'No': ->
-        $('#message').html($('#message').html() + "<button onclick='javascript:play_again()'>Play again</button>")
-        $(this).dialog('close'))
+  if playing_computer()
+    $('#play_again_dialog').dialog(
+      autoOpen: true
+      resizable: false
+      modal: true
+      buttons:
+        'Yes': ->
+          play_again()
+          $(this).dialog('close')
+        'No': ->
+          $('#message').html($('#message').html() + "<button onclick='javascript:play_again()'>Play again</button>")
+          $(this).dialog('close'))
+  else
+    $('#play_again_dialog').dialog(
+      autoOpen: true
+      resizable: false
+      title: title
+      modal: true
+      buttons:
+        'Ok': ->
+          $(this).dialog('close'))
 
 root.end_game = () ->
   root.game_end = true
   setTimeout(ask_play_again, 500)
 
+root.playing_computer = -> return first_player == "Computer" || second_player == "Computer"
+
 root.set_winner = (winner) ->
   if winner
     $('#message').html("#{winner} Wins")
-    $('#play_again_dialog').html("#{winner} Wins. Do you want to play again?")
+    html = "#{winner} Wins."
+    html += "Do you want to play again?" if playing_computer()
+    $('#play_again_dialog').html(html)
   else
     $("#message").html("Game is a draw")
-    $('#play_again_dialog').html("Draw. Do you want to play again?")
+    html = "Draw."
+    html += "Do you want to play again?" if playing_computer()
+    $('#play_again_dialog').html(html)
 
 root.check_for_win = ->
   if (is_win("x"))
@@ -157,7 +171,10 @@ root.make_mark = (symbol) ->
   return "" if symbol == "-"
   "<img src=\"/assets/#{if symbol == "x" then "oars" else "lifepreserver"}.png\">"
 
-root.put_mark = (idx, symbol) -> $('#t-'+ idx).html(make_mark(symbol))
+root.put_mark = (idx, symbol) ->
+  html = $('#t-'+idx).html()
+  if html != make_mark(symbol)
+    $('#t-'+ idx).html(make_mark(symbol))
 root.get_mark = (idx) -> $('#t-'+idx).html()
 
 clear_message = () -> $('#message').html("")
@@ -182,7 +199,6 @@ root.make_move = (idx, symbol) ->
     root.position.board[idx] = root.position.turn
     root.position.turn = other_turn(root.position.turn)
     put_turn()
-    check_for_win()
     return true
   else
     $('#message').html("Please click on an empty square")
@@ -201,10 +217,13 @@ root.set_position = (new_position) ->
   return if new_position == null
   root.position = new_position
   put_mark(idx, root.position.board[idx]) for idx in [0..8]
+  put_turn()
+  check_for_win()
 
 root.get_position = -> $.get("/games/"+root.game_id+"/get_position", set_position)
 
 root.check_for_move = ->
+  return if root.game_end
   get_position()
   if position.turn != current_player_symbol
     setTimeout(check_for_move, 3000)
@@ -216,3 +235,4 @@ root.send_move = (n, symbol) ->
       computer_move()
     else
       opponent_move()
+    check_for_win()

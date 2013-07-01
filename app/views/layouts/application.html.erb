@@ -16,10 +16,15 @@
 
   <div id="banner">
     <% if user_signed_in? %>
+      <a href="<%= games_url %>">Games</a>
+    <% end %>
+    <div class="right">
+    <% if user_signed_in? %>
       <%= current_user.name %> <%= link_to('Logout', sign_out_path, :method => :delete) %>
     <% else %>
       <%= link_to('Login', sign_in_path)  %> or <%= link_to('Sign Up', sign_up_path) %>
     <% end %>
+    </div>
   </div>
   <h1><a href="/">Tic Tac Toe</a></h1>
   <h2 id="message">

@@ -128,3 +128,15 @@ html, body {
   opacity: 0.93;
   filter:alpha(opacity=93);
 }
+
+#legend_track {
+  position: absolute;
+  top: 100px;
+}
+#legend ul {
+  list-style: none;
+}
+
+.turn {
+  background-color: white;
+}

@@ -24,8 +24,8 @@ class GamesController < ApplicationController
     end
 
     @game = Game.find(params[:id])
-    @first_player = @game.first_user
-    @second_player = @game.second_user
+    @first_player = @game.first_user || User.new
+    @second_player = @game.second_user || User.new
     @current_player_symbol = current_user.id == @game.first_user.id ? "x" : "o"
     respond_to do |format|
       format.html # show.html.erb
@@ -75,7 +75,7 @@ class GamesController < ApplicationController
       game.second_user_id = current_user.id
     end
     if game.save
-      redirect_to '/', notice: 'Game invitation has been sent.'
+      redirect_to game, notice: 'Game invitation has been sent.'
       query_params = {}
       query_params.merge!(:login_token => opponent.login_token) if opponent.login_token
       Email.request_game(opponent.email, current_user.email, game_url(game, query_params)).deliver
