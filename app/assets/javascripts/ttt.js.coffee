@@ -1,4 +1,4 @@
-boat_duration = 40000
+boat_duration = 60000
 boat_rocking_duration = 3000
 loading = false
 animate = true
@@ -15,13 +15,13 @@ animate_boat_clockwise = ->
   $('#boat').rotate({
     animateTo: 10
     duration: boat_rocking_duration
-    # easing: (x, t, b, c, d) -> return b+(t/d)*c
+    easing: (x, t, b, c, d) -> return b+(t/d)*c
     callback: animate_boat_counterclockwise})
 animate_boat_counterclockwise = ->
   $('#boat').rotate({
     animateTo: -10
     duration: boat_rocking_duration
-    # easing: (x, t, b, c, d) -> return b+(t/d)*c
+    easing: (x, t, b, c, d) -> return b+(t/d)*c
     callback: animate_boat_clockwise })
 animate_loading = ->
   $("#loading img").rotate({
