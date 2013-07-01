@@ -1,7 +1,7 @@
 boat_duration = 40000
 boat_rocking_duration = 3000
 loading = false
-animate = false
+animate = true
 
 animate_boat_right = ->
   $('#boat').attr('src', '/assets/boat-flip.png')
