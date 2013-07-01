@@ -4,25 +4,34 @@
 #   Ensure the SQLite 3 gem is defined in your Gemfile
 #   gem 'sqlite3'
 development:
-  adapter: sqlite3
-  database: db/development.sqlite3
+  adapter: postgresql
+  encoding: unicode
+  database: jruby_ttt_development
+  host: localhost
   pool: 5
-  timeout: 5000
+  username: ckim
+  password:
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test: &test
-  adapter: sqlite3
-  database: db/test.sqlite3
+  adapter: postgresql
+  encoding: unicode
+  database: jruby_ttt_test.sqlite3
+  host: localhost
   pool: 5
-  timeout: 5000
+  username: ckim
+  password:
 
 production:
-  adapter: sqlite3
-  database: db/production.sqlite3
+  adapter: postgresql
+  encoding: unicode
+  host: ec2-107-21-112-215.compute-1.amazonaws.com
+  database: d90pe1n32ft2e6
   pool: 5
-  timeout: 5000
+  username: ikunuofphetopd
+  password: ZsFdr56H7kCHJjRbLnDVKfFOZs
 
 cucumber:
   <<: *test
