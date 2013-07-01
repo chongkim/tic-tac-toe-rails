@@ -26,6 +26,7 @@ class GamesController < ApplicationController
     @game = Game.find(params[:id])
     @first_player = @game.first_user || User.new
     @second_player = @game.second_user || User.new
+    @current_player = current_user || User.new
     @current_player_symbol = current_user.id == @game.first_user.id ? "x" : "o"
     respond_to do |format|
       format.html # show.html.erb
@@ -97,7 +98,7 @@ class GamesController < ApplicationController
   def get_position
     @game = Game.find(params[:id])
     render :json => {
-      :board => @game.board.chars.to_a,
+      :board => (@game.board || "---------").chars.to_a,
       :turn => @game.turn,
     }
   end

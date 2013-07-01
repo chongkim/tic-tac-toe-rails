@@ -5,9 +5,9 @@
     <h2>Play against:</h2>
     <form action="javascript:return false" method="get" accept-charset="utf-8">
       <input type="button" name="human_first" id="human_first" value="You vs Computer"
-      onclick="javascript:set_players('Human', 'Computer', 'x')"/><br />
+      onclick="javascript:set_players({name:'Human'}, {name:'Computer'}, {name: 'Human'}, 'x')"/><br />
       <input type="button" name="computer_first" id="computer_first" value="Computer vs You"
-      onclick="javascript:set_players('Computer', 'Human', 'o')"/><br />
+      onclick="javascript:set_players({name: 'Computer'}, {name: 'Human'}, {name: 'Human'}, 'o')"/><br />
       <input type="button" name="against_another_player" id="Opponent First" value="You vs Opponent" onclick="window.location='<%= url_for :controller => :games, :action => :new %>'"/>
     </form>
   </div>

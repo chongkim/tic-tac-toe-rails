@@ -16,7 +16,11 @@
 <script type="text/javascript" charset="utf-8">
   game_id = <%= @game.id %>;
   $(function() {
-      set_players('<%= @first_player.name %>', '<%= @second_player.name %>', '<%= @current_player_symbol %>');
+      set_players(
+        {name: '<%= @first_player.name %>', email: ' <%= @first_player.email %>'},
+        {name: '<%= @second_player.name %>', email: '<%= @second_player.email %>'},
+        {name: '<%= @current_player.name %>', email: '<%= @current_player.email %>'},
+        '<%= @current_player_symbol %>');
       check_for_move();
   });
 </script>

@@ -54,8 +54,9 @@ $ ->
   
 
 root = exports ? this
-first_player = null
-second_player = null
+first_player = {}
+second_player = {}
+current_player = {}
 dim = 3
 root.game_end = false
 root.current_player_symbol = null
@@ -132,7 +133,7 @@ root.end_game = () ->
   root.game_end = true
   setTimeout(ask_play_again, 500)
 
-root.playing_computer = -> return first_player == "Computer" || second_player == "Computer"
+root.playing_computer = -> return first_player.name == "Computer" || second_player.name == "Computer"
 
 root.set_winner = (winner) ->
   if winner
@@ -148,22 +149,23 @@ root.set_winner = (winner) ->
 
 root.check_for_win = ->
   if (is_win("x"))
-    set_winner(first_player)
+    set_winner(first_player.name)
     end_game()
   else if (is_win("o"))
-    set_winner(second_player)
+    set_winner(second_player_name)
     end_game()
   else if count_blanks() == 0
     set_winner(null)
     end_game()
   
-root.set_players = (first_player_in, second_player_in, player_symbol) ->
+root.set_players = (first_player_in, second_player_in, current_player_in, player_symbol) ->
   first_player  = first_player_in
   second_player = second_player_in
+  current_player = current_player_in
   $('#ttt').html($('#board_display').html())
   $('#message').html("Welcome to Tic Tac Toe")
   root.current_player_symbol = player_symbol
-  computer_move() if first_player == "Computer"
+  computer_move() if first_player.name == "Computer"
   $('#first_player').addClass('turn')
   check_for_move() if root.current_player_symbol != "x"
 
@@ -193,6 +195,7 @@ root.put_turn = ->
 root.make_move = (idx, symbol) ->
   return false if root.game_end
   return false if symbol != root.position.turn
+  return false if current_player.email != first_player.email || current_player.email != second_player.email
   clear_message()
   if (root.position.board[idx] == "-")
     put_mark(idx, root.position.turn)
